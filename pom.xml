@@ -21,6 +21,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<docker.image.prefix>wolfdeveloper</docker.image.prefix>
+		<docker.image.name>spring-boot-docker-image</docker.image.name>
 	</properties>
 
 	<dependencies>
@@ -44,6 +46,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 	
 	<build>
@@ -51,6 +54,35 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.34.1</version>
+
+				<configuration>
+					<dockerHost>http://127.0.0.1:2375</dockerHost>
+					<verbose>true</verbose>
+
+					<images>
+						<image>
+							<name>${docker.image.prefix}/${docker.image.name}</name>
+							<build>
+								<dockerFileDir>${project.basedir}/src/main/docker/</dockerFileDir>
+
+								<!-- copia l'artifact del docker build dentro target -->
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+
+								<tags>
+									<tag>latest</tag>
+									<tag>${project.version}</tag>
+								</tags>
+							</build>
+						</image>
+					</images>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
